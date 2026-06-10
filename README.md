@@ -1,16 +1,11 @@
-# Odin
+# Odin-Markdown
 
-Terminal-first viewer for Markdown files
+Terminal-first viewer for Markdown files. Odin uses OpenTUI.
 
 ## Install
 
 ```bash
-npm install -g odin
-```
-
-You can also run it without a global install:
-
-```bash
+npm install -g odin-view
 ```
 
 ## Usage
@@ -27,5 +22,4 @@ bun run build
 bun <Markdown-file-name>.md
 ```
 
-Odin uses OpenTUI.
 
