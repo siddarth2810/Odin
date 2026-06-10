@@ -5,7 +5,7 @@ Terminal-first viewer for Markdown files. Odin uses OpenTUI.
 ## Install
 
 ```bash
-npm install -g odin-view
+npm install -g odin-md
 ```
 
 ## Usage
@@ -19,7 +19,7 @@ odin file.md
 ```bash
 bun install
 bun run build
-bun <Markdown-file-name>.md
+bun run dev <Markdown-file-name>.md
 ```
 
 
