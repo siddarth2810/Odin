@@ -24,6 +24,7 @@ odin file.md
 ```bash
 bun install
 bun run build
+bun <Markdown-file-name>.md
 ```
 
 Odin uses OpenTUI.

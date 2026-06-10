@@ -4,7 +4,7 @@ import { access, readFile } from "node:fs/promises"
 import path from "node:path"
 import { createCliRenderer, type CliRenderer, type ScrollBoxRenderable } from "@opentui/core"
 import { render, useKeyboard, useTerminalDimensions } from "@opentui/solid"
-import { colors, markdownSyntax } from "./themes"
+import { colors, markdownSyntax } from "./themes.js"
 
 type CliInput = {
   file: string
@@ -12,7 +12,7 @@ type CliInput = {
 }
 
 function usage(): never {
-  console.error("Usage: bun run src/index.tsx <file.md>")
+  console.error("Usage: odin <file.md>")
   process.exit(1)
 }
 
@@ -126,7 +126,7 @@ async function runApp(input: CliInput, renderer: CliRenderer): Promise<void> {
 }
 
 async function main() {
-  const arg = Bun.argv[2]
+  const arg = process.argv[2]
   if (!arg) usage()
 
   const input = await readMarkdownFile(arg)
