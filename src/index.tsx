@@ -2,53 +2,13 @@
 /** @jsxImportSource @opentui/solid */
 import { access, readFile } from "node:fs/promises"
 import path from "node:path"
-import { createCliRenderer, SyntaxStyle, type CliRenderer, type ScrollBoxRenderable } from "@opentui/core"
+import { createCliRenderer, type CliRenderer, type ScrollBoxRenderable } from "@opentui/core"
 import { render, useKeyboard, useTerminalDimensions } from "@opentui/solid"
+import { colors, markdownSyntax } from "./themes"
 
 type CliInput = {
   file: string
   content: string
-}
-
-const colors = {
-  background: "#0a0a0a",
-  backgroundPanel: "#141414",
-  backgroundElement: "#1e1e1e",
-  borderSubtle: "#3c3c3c",
-  border: "#484848",
-  borderActive: "#606060",
-  primary: "#fab283",
-  secondary: "#5c9cf5",
-  accent: "#9d7cd8",
-  error: "#e06c75",
-  warning: "#f5a742",
-  success: "#7fd88f",
-  info: "#56b6c2",
-  text: "#eeeeee",
-  textMuted: "#808080",
-  markdownText: "#eeeeee",
-  markdownHeading: "#eeeeee",
-  markdownLink: "#fab283",
-  markdownLinkText: "#56b6c2",
-  markdownCode: "#7fd88f",
-  markdownBlockQuote: "#e5c07b",
-  markdownEmph: "#e5c07b",
-  markdownStrong: "#f5a742",
-  markdownHorizontalRule: "#808080",
-  markdownListItem: "#fab283",
-  markdownListEnumeration: "#56b6c2",
-  markdownImage: "#fab283",
-  markdownImageText: "#56b6c2",
-  markdownCodeBlock: "#eeeeee",
-  syntaxComment: "#808080",
-  syntaxKeyword: "#9d7cd8",
-  syntaxFunction: "#fab283",
-  syntaxVariable: "#eeeeee",
-  syntaxString: "#7fd88f",
-  syntaxNumber: "#e5c07b",
-  syntaxType: "#56b6c2",
-  syntaxOperator: "#56b6c2",
-  syntaxPunctuation: "#eeeeee",
 }
 
 function usage(): never {
@@ -63,45 +23,6 @@ async function readMarkdownFile(rawFile: string): Promise<CliInput> {
     file,
     content: await readFile(file, "utf8"),
   }
-}
-
-function markdownSyntax() {
-  return SyntaxStyle.fromTheme([
-    { scope: ["default"], style: { foreground: colors.markdownText } },
-    { scope: ["markup.heading"], style: { foreground: colors.markdownHeading, bold: true } },
-    { scope: ["markup.heading.1"], style: { foreground: colors.markdownHeading, bold: true, underline: true } },
-    { scope: ["markup.heading.2"], style: { foreground: colors.markdownHeading, bold: true } },
-    { scope: ["markup.heading.3"], style: { foreground: colors.markdownHeading, bold: true } },
-    { scope: ["markup.heading.4"], style: { foreground: colors.markdownHeading, bold: true } },
-    { scope: ["markup.heading.5"], style: { foreground: colors.markdownHeading, bold: true } },
-    { scope: ["markup.heading.6"], style: { foreground: colors.markdownHeading, bold: true } },
-    { scope: ["markup.bold", "markup.strong"], style: { foreground: colors.markdownStrong, bold: true } },
-    { scope: ["markup.italic"], style: { foreground: colors.markdownEmph, italic: true } },
-    { scope: ["markup.list"], style: { foreground: colors.markdownListItem } },
-    { scope: ["markup.list.enumerator"], style: { foreground: colors.markdownListEnumeration } },
-    { scope: ["markup.quote"], style: { foreground: colors.markdownBlockQuote, italic: true } },
-    { scope: ["markup.raw", "markup.raw.block"], style: { foreground: colors.markdownCode } },
-    { scope: ["markup.raw.inline"], style: { foreground: colors.markdownCode, background: colors.background } },
-    { scope: ["markup.link"], style: { foreground: colors.markdownLink, underline: true } },
-    { scope: ["markup.link.label"], style: { foreground: colors.markdownLinkText, underline: true } },
-    { scope: ["markup.link.url"], style: { foreground: colors.markdownLink, underline: true } },
-    { scope: ["label"], style: { foreground: colors.markdownLinkText } },
-    { scope: ["string.special", "string.special.url"], style: { foreground: colors.markdownLink, underline: true } },
-    { scope: ["markup.strikethrough"], style: { foreground: colors.textMuted } },
-    { scope: ["markup.underline"], style: { foreground: colors.text, underline: true } },
-    { scope: ["markup.list.checked"], style: { foreground: colors.success } },
-    { scope: ["markup.list.unchecked"], style: { foreground: colors.textMuted } },
-    { scope: ["markup.rule"], style: { foreground: colors.markdownHorizontalRule } },
-    { scope: ["conceal"], style: { foreground: colors.textMuted } },
-    { scope: ["comment"], style: { foreground: colors.syntaxComment, italic: true } },
-    { scope: ["keyword"], style: { foreground: colors.syntaxKeyword } },
-    { scope: ["function"], style: { foreground: colors.syntaxFunction } },
-    { scope: ["string"], style: { foreground: colors.syntaxString } },
-    { scope: ["number"], style: { foreground: colors.syntaxNumber } },
-    { scope: ["type"], style: { foreground: colors.syntaxType } },
-    { scope: ["operator"], style: { foreground: colors.syntaxOperator } },
-    { scope: ["punctuation"], style: { foreground: colors.syntaxPunctuation } },
-  ])
 }
 
 function shutdown(renderer: CliRenderer): void {
