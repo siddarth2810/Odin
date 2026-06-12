@@ -16,7 +16,7 @@ export const mdLight = {
         bullet: ansi256Hex(166),
         link: ansi256Hex(26),
         codeFg: ansi256Hex(124),
-        codeBg: ansi256Hex(254),
+        codeBg: ansi256Hex(124),
         fence: ansi256Hex(28),
         dim: ansi256Hex(242),
         note: ansi256Hex(25),
@@ -53,7 +53,7 @@ function buildColors(md: MdrPalette, scheme: Scheme) {
 
         return {
                 background,
-                backgroundPanel: md.codeBg,
+                backgroundPanel: "#141414",
                 backgroundElement: background,
                 buttonBackground: isDark ? "#303030" : md.codeBg,
                 borderSubtle: md.dim,
@@ -74,6 +74,7 @@ function buildColors(md: MdrPalette, scheme: Scheme) {
                 markdownLinkText: "#56b6c2",
                 markdownCode: "#7fd88f",
                 markdownCodeBackground: md.codeBg,
+                markdownCodeBlockBackground: isDark ? md.codeBg : "#FCFAFB",
                 markdownCodeBlock: md.fence,
                 markdownCodeBorder: md.dim,
                 markdownBlockQuote: md.dim,
@@ -174,4 +175,9 @@ export function markdownSyntax(c: Colors = colors) {
                 { scope: ["operator"], style: { foreground: c.syntaxOperator } },
                 { scope: ["punctuation"], style: { foreground: c.syntaxPunctuation } },
         ])
+}
+
+export const markdownSyntaxStyles: Record<ThemeName, SyntaxStyle> = {
+        dark: markdownSyntax(darkColors),
+        light: markdownSyntax(lightColors),
 }

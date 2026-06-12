@@ -3,13 +3,18 @@ import { createComponent, render } from "@opentui/solid"
 import { App, type OdinInput } from "./App.js"
 import { colors } from "./themes.js"
 
+const TARGET_FPS = 12
+const MAX_FPS = 30
+
 export async function runOdinApp(input: OdinInput): Promise<void> {
   const renderer = await createCliRenderer({
     stdin: process.stdin,
     stdout: process.stdout,
-    targetFps: 30,
-    maxFps: 60,
+    // Markdown viewing is mostly static; scroll/resize still request frames on demand.
+    targetFps: TARGET_FPS,
+    maxFps: MAX_FPS,
     useMouse: true,
+    enableMouseMovement: false,
     autoFocus: true,
     screenMode: "alternate-screen",
     consoleMode: "disabled",

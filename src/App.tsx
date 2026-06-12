@@ -3,7 +3,7 @@ import path from "node:path"
 import type { ScrollBoxRenderable } from "@opentui/core"
 import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
 import { createMemo, createSignal } from "solid-js"
-import { defaultThemeName, markdownSyntax, themes, type Colors, type ThemeName } from "./themes.js"
+import { defaultThemeName, markdownSyntaxStyles, themes, type Colors, type ThemeName } from "./themes.js"
 
 export type OdinInput = {
   file: string
@@ -22,13 +22,32 @@ type MarkdownSegment =
   | {
       kind: "code"
       language: string
-      lines: string[]
+      body: string
     }
+
+const CODE_LINE_PREFIX = "  │ "
+const CODE_HEADER_PREFIX = "  ╭──"
+const CODE_FOOTER = "  ╰──"
+
+function visitContentLines(content: string, visit: (line: string) => void): void {
+  let lineStart = 0
+
+  while (lineStart <= content.length) {
+    const newlineIndex = content.indexOf("\n", lineStart)
+    const lineEnd = newlineIndex === -1 ? content.length : newlineIndex
+    const normalizedEnd = lineEnd > lineStart && content.charCodeAt(lineEnd - 1) === 13 ? lineEnd - 1 : lineEnd
+
+    visit(content.slice(lineStart, normalizedEnd))
+
+    if (newlineIndex === -1) return
+    lineStart = newlineIndex + 1
+  }
+}
 
 function splitMarkdownSegments(content: string): MarkdownSegment[] {
   const segments: MarkdownSegment[] = []
   const markdownLines: string[] = []
-  let codeLines: string[] = []
+  let codeBodyLines: string[] = []
   let language = ""
   let inCode = false
 
@@ -41,34 +60,35 @@ function splitMarkdownSegments(content: string): MarkdownSegment[] {
     }
   }
 
-  for (const rawLine of content.split("\n")) {
-    const line = rawLine.endsWith("\r") ? rawLine.slice(0, -1) : rawLine
-    const trimmedEnd = line.trimEnd()
+  const flushCode = () => {
+    segments.push({ kind: "code", language, body: codeBodyLines.join("\n") })
+    codeBodyLines = []
+    language = ""
+  }
 
-    if (trimmedEnd.startsWith("```")) {
+  visitContentLines(content, (line) => {
+    if (line.startsWith("```")) {
       if (inCode) {
-        segments.push({ kind: "code", language, lines: codeLines })
-        codeLines = []
-        language = ""
+        flushCode()
         inCode = false
       } else {
         flushMarkdown()
-        language = trimmedEnd.slice(3).trim()
-        codeLines = []
+        language = line.slice(3).trim()
+        codeBodyLines = []
         inCode = true
       }
-      continue
+      return
     }
 
     if (inCode) {
-      codeLines.push(line)
+      codeBodyLines.push(`${CODE_LINE_PREFIX}${line}`)
     } else {
       markdownLines.push(line)
     }
-  }
+  })
 
   if (inCode) {
-    segments.push({ kind: "code", language, lines: codeLines })
+    flushCode()
   } else {
     flushMarkdown()
   }
@@ -76,22 +96,28 @@ function splitMarkdownSegments(content: string): MarkdownSegment[] {
   return segments
 }
 
-function MdrCodeBlock(props: { colors: Colors; language: string; lines: string[] }) {
-  const header = props.language.length > 0 ? `  ╭── ${props.language} ` : "  ╭──"
+function MdrCodeBlock(props: { colors: Colors; language: string; body: string }) {
+  const header = props.language.length > 0 ? `${CODE_HEADER_PREFIX} ${props.language} ` : CODE_HEADER_PREFIX
 
   return (
-    <box width="100%" flexDirection="column" flexShrink={0} marginTop={1} marginBottom={1}>
+    <box
+      width="100%"
+      flexDirection="column"
+      flexShrink={0}
+      marginTop={1}
+      marginBottom={1}
+      backgroundColor={props.colors.markdownCodeBlockBackground}
+    >
       <text width="100%" fg={props.colors.markdownCodeBorder} wrapMode="none" truncate={true}>
         {header}
       </text>
-      {props.lines.map((line) => (
+      {props.body.length > 0 ? (
         <text width="100%" fg={props.colors.markdownCodeBlock} wrapMode="none" truncate={true}>
-          {"  │ "}
-          {line}
+          {props.body}
         </text>
-      ))}
+      ) : null}
       <text width="100%" fg={props.colors.markdownCodeBorder} wrapMode="none" truncate={true}>
-        {"  ╰──"}
+        {CODE_FOOTER}
       </text>
     </box>
   )
@@ -101,8 +127,9 @@ export function App(props: AppProps) {
   const dimensions = useTerminalDimensions()
   const [themeName, setThemeName] = createSignal<ThemeName>(defaultThemeName)
   const activeColors = createMemo(() => themes[themeName()])
-  const syntaxStyle = createMemo(() => markdownSyntax(activeColors()))
+  const syntaxStyle = createMemo(() => markdownSyntaxStyles[themeName()])
   const segments = splitMarkdownSegments(props.content)
+  const fileName = path.basename(props.file)
   let scroller: ScrollBoxRenderable | undefined
   const toggleTheme = () => {
     setThemeName((current) => (current === "dark" ? "light" : "dark"))
@@ -152,11 +179,6 @@ export function App(props: AppProps) {
 
   return (
     <box width={dimensions().width} height={dimensions().height} flexDirection="column" backgroundColor={activeColors().background}>
-      <box height={1} paddingLeft={1} paddingRight={1} backgroundColor={activeColors().backgroundPanel}>
-        <text width="100%" fg={activeColors().text} wrapMode="none" truncate={true} onMouseUp={() => toggleTheme()}>
-          odin  {path.basename(props.file)}
-        </text>
-      </box>
       <scrollbox
         ref={(renderable) => {
           scroller = renderable
@@ -190,14 +212,14 @@ export function App(props: AppProps) {
                 fg={activeColors().markdownText}
               />
             ) : (
-              <MdrCodeBlock colors={activeColors()} language={segment.language} lines={segment.lines} />
+              <MdrCodeBlock colors={activeColors()} language={segment.language} body={segment.body} />
             ),
           )}
         </box>
       </scrollbox>
       <box height={1} paddingLeft={1} paddingRight={1} backgroundColor={activeColors().backgroundPanel}>
         <text width="100%" fg={activeColors().textMuted} wrapMode="none" truncate={true}>
-           q/esc exit · t theme · j/k ↑↓ scroll · pageup/pagedown jump
+         {fileName} · q/esc · j/k ↑↓ · t
         </text>
       </box>
     </box>
