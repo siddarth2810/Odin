@@ -1,111 +1,152 @@
-import { SyntaxStyle, ansi256IndexToRgb } from "@opentui/core"
+import { SyntaxStyle } from "@opentui/core"
 
-function hexByte(value: number): string {
-        return value.toString(16).padStart(2, "0")
+export type Colors = {
+        background: string
+        backgroundPanel: string
+        backgroundElement: string
+        buttonBackground: string
+        borderSubtle: string
+        border: string
+        borderActive: string
+        primary: string
+        secondary: string
+        accent: string
+        error: string
+        warning: string
+        success: string
+        info: string
+        text: string
+        textMuted: string
+        markdownText: string
+        markdownHeading: string
+        markdownLink: string
+        markdownLinkText: string
+        markdownCode: string
+        markdownCodeBackground: string
+        markdownCodeBlockBackground: string
+        markdownCodeBlock: string
+        markdownCodeBorder: string
+        markdownBlockQuote: string
+        markdownEmph: string
+        markdownStrong: string
+        markdownHorizontalRule: string
+        markdownListItem: string
+        markdownListEnumeration: string
+        markdownImage: string
+        markdownImageText: string
+        syntaxComment: string
+        syntaxKeyword: string
+        syntaxFunction: string
+        syntaxVariable: string
+        syntaxString: string
+        syntaxNumber: string
+        syntaxType: string
+        syntaxOperator: string
+        syntaxPunctuation: string
 }
 
-function ansi256Hex(index: number): string {
-        const [red, green, blue] = ansi256IndexToRgb(index)
-        return `#${hexByte(red)}${hexByte(green)}${hexByte(blue)}`
+export const darkColors: Colors = {
+        background: "#121212", //sidebar blend it
+        backgroundPanel: "#252524",
+        backgroundElement: "#121212", //background
+        buttonBackground: "#303030",
+        borderSubtle: "#808080",
+        border: "#808080",
+        borderActive: "#00afff",
+        primary: "#ff8700",
+        secondary: "#00afff",
+        accent: "#ff87ff",
+        error: "#ff5f5f",
+        warning: "#d7af5f",
+        success: "#5fd787",
+        info: "#5fafff",
+        text: "#FFFFFF", // text in dark background
+        textMuted: "#808080",
+        markdownText: "#eeeeee",
+        markdownHeading: "#ff87ff",
+        markdownLink: "#808080" ,//markdown link color
+        markdownLinkText: "#9FC5F4",
+        markdownCode: "#F3A8A8", //single quotes text color
+        markdownCodeBackground: "#303030",
+        markdownCodeBlockBackground: "#303030", //triple quotes backgrond
+        markdownCodeBlock: "#9BE963", // code color under triple quotes
+markdownCodeBorder: "#818898", //triple quotes title text
+        markdownBlockQuote: "#808080",
+        markdownEmph: "#d7af5f",
+        markdownStrong: "#d7af5f",
+        markdownHorizontalRule: "#808080",
+        markdownListItem: "#ff8700",
+        markdownListEnumeration: "#ff8700",
+        markdownImage: "#00afff",
+        markdownImageText: "#00afff",
+        syntaxComment: "#808080",
+        syntaxKeyword: "#af87ff",
+        syntaxFunction: "#00d7ff",
+        syntaxVariable: "#eeeeee",
+        syntaxString: "#5fd787",
+        syntaxNumber: "#d7af5f",
+        syntaxType: "#5fafff",
+        syntaxOperator: "#00d7ff",
+        syntaxPunctuation: "#808080",
 }
 
-export const mdLight = {
-        h1: ansi256Hex(125),
-        h2: ansi256Hex(125),
-        h3: ansi256Hex(31),
-        bullet: ansi256Hex(166),
-        link: ansi256Hex(26),
-        codeFg: ansi256Hex(124),
-        codeBg: ansi256Hex(124),
-        fence: ansi256Hex(28),
-        dim: ansi256Hex(242),
-        note: ansi256Hex(25),
-        tip: ansi256Hex(28),
-        important: ansi256Hex(91),
-        warning: ansi256Hex(130),
-        caution: ansi256Hex(160),
+export const lightColors: Colors = {
+                // the status bar color I want: #
+        // background color: ##
+        // text color blackis: #0B0B0B
+        // codeblock within single quotes `` background color: #EEEEEC and the font color inside them #8D2525
+        // codeblock with triple quotes ``` would be nice if i can get a background color  of #FCFAFB
+
+        background: "#F8F8F6", //sidebar blend it
+        backgroundPanel: "#EEEEEC", //footer bar color
+        backgroundElement: "#F8F8F6", //background
+        buttonBackground: "#e4e4e4",
+        borderSubtle: "#6c6c6c",
+        border: "#6c6c6c",
+        borderActive: "#005fd7",
+        primary: "#d75f00",
+        secondary: "#005fd7",
+        accent: "#af005f",
+        error: "#d70000",
+        warning: "#af5f00",
+        success: "#008700",
+        info: "#005faf",
+        text: "#0B0B0B",
+        textMuted: "#6c6c6c",
+        markdownText: "#1c1c1c", // text color
+        markdownHeading: "#af005f",
+        markdownLink: "#005fd7",
+        markdownLinkText: "#005fd7",
+        markdownCode: "#C9413A", //single quotes text color
+        markdownCodeBackground: "#E8E8E6", // single quotes color
+        markdownCodeBlockBackground: "#fcfafb", //triple quotes background color
+        markdownCodeBlock: "#008000", //triple quotes code color
+        markdownCodeBorder: "#6E7687", //triple quotes title text color
+        markdownBlockQuote: "#6E7687",
+        markdownEmph: "#C96442",
+        markdownStrong: "#C96442",
+        markdownHorizontalRule: "#6c6c6c",
+        markdownListItem: "#d75f00",
+        markdownListEnumeration: "#d75f00",
+        markdownImage: "#005fd7",
+        markdownImageText: "#005fd7",
+        syntaxComment:  "#6c6c6c",
+        syntaxKeyword: "#8700af",
+        syntaxFunction: "#0087af",
+        syntaxVariable: "#1c1c1c",
+        syntaxString: "#008700",
+        syntaxNumber: "#af5f00",
+        syntaxType: "#005faf",
+        syntaxOperator: "#0087af",
+        syntaxPunctuation: "#6c6c6c",
 }
 
-export const mdDark = {
-        h1: ansi256Hex(213),
-        h2: ansi256Hex(213),
-        h3: ansi256Hex(45),
-        bullet: ansi256Hex(208),
-        link: ansi256Hex(39),
-        codeFg: ansi256Hex(215),
-        codeBg: ansi256Hex(236),
-        fence: ansi256Hex(114),
-        dim: ansi256Hex(244),
-        note: ansi256Hex(75),
-        tip: ansi256Hex(78),
-        important: ansi256Hex(141),
-        warning: ansi256Hex(179),
-        caution: ansi256Hex(203),
-}
-
-type MdrPalette = typeof mdLight
-type Scheme = "dark" | "light"
-
-function buildColors(md: MdrPalette, scheme: Scheme) {
-        const isDark = scheme === "dark"
-        const text = isDark ? "#eeeeee" : "#1c1c1c"
-        const background = isDark ? "#0a0a0a" : "#ffffff"
-
-        return {
-                background,
-                backgroundPanel: "#141414",
-                backgroundElement: background,
-                buttonBackground: isDark ? "#303030" : md.codeBg,
-                borderSubtle: md.dim,
-                border: md.dim,
-                borderActive: md.link,
-                primary: md.bullet,
-                secondary: md.link,
-                accent: md.h1,
-                error: md.caution,
-                warning: md.warning,
-                success: md.tip,
-                info: md.note,
-                text,
-                textMuted: md.dim,
-                markdownText: text,
-                markdownHeading: md.h1,
-                markdownLink: "#fab283",
-                markdownLinkText: "#56b6c2",
-                markdownCode: "#7fd88f",
-                markdownCodeBackground: md.codeBg,
-                markdownCodeBlockBackground: isDark ? md.codeBg : "#FCFAFB",
-                markdownCodeBlock: md.fence,
-                markdownCodeBorder: md.dim,
-                markdownBlockQuote: md.dim,
-                markdownEmph: md.warning,
-                markdownStrong: md.warning,
-                markdownHorizontalRule: md.dim,
-                markdownListItem: md.bullet,
-                markdownListEnumeration: md.bullet,
-                markdownImage: md.link,
-                markdownImageText: md.link,
-                syntaxComment: md.dim,
-                syntaxKeyword: md.important,
-                syntaxFunction: md.h3,
-                syntaxVariable: text,
-                syntaxString: md.tip,
-                syntaxNumber: md.warning,
-                syntaxType: md.note,
-                syntaxOperator: md.h3,
-                syntaxPunctuation: md.dim,
-        }
-}
-
-export const darkColors = buildColors(mdDark, "dark")
-export const lightColors = buildColors(mdLight, "light")
 export const themes = {
         dark: darkColors,
         light: lightColors,
 }
 
 export type ThemeName = keyof typeof themes
-export type Colors = typeof darkColors
 
 export const defaultThemeName: ThemeName = "dark"
 export const colors = themes[defaultThemeName]
@@ -138,7 +179,7 @@ export const markdownTheme = {
         },
 }
 
-export function markdownSyntax(c: Colors = colors) {
+function createMarkdownSyntaxStyle(c: Colors) {
         return SyntaxStyle.fromTheme([
                 { scope: ["default"], style: { foreground: c.markdownText } },
                 { scope: ["markup.heading"], style: { foreground: c.markdownHeading, bold: true } },
@@ -153,8 +194,9 @@ export function markdownSyntax(c: Colors = colors) {
                 { scope: ["markup.list"], style: { foreground: c.markdownListItem } },
                 { scope: ["markup.list.enumerator"], style: { foreground: c.markdownListEnumeration } },
                 { scope: ["markup.quote"], style: { foreground: c.markdownBlockQuote, italic: true } },
-                { scope: ["markup.raw", "markup.raw.block"], style: { foreground: c.markdownCodeBlock } },
+                { scope: ["markup.raw"], style: { foreground: c.markdownCode, background: c.markdownCodeBackground } },
                 { scope: ["markup.raw.inline"], style: { foreground: c.markdownCode, background: c.markdownCodeBackground } },
+                { scope: ["markup.raw.block"], style: { foreground: c.markdownCodeBlock } },
                 { scope: ["markup.link"], style: { foreground: c.markdownLink, underline: true } },
                 { scope: ["markup.link.label"], style: { foreground: c.markdownLinkText, underline: true } },
                 { scope: ["markup.link.url"], style: { foreground: c.markdownLink, underline: true } },
@@ -169,6 +211,7 @@ export function markdownSyntax(c: Colors = colors) {
                 { scope: ["comment"], style: { foreground: c.syntaxComment, italic: true } },
                 { scope: ["keyword"], style: { foreground: c.syntaxKeyword } },
                 { scope: ["function"], style: { foreground: c.syntaxFunction } },
+                { scope: ["variable"], style: { foreground: c.syntaxVariable } },
                 { scope: ["string"], style: { foreground: c.syntaxString } },
                 { scope: ["number"], style: { foreground: c.syntaxNumber } },
                 { scope: ["type"], style: { foreground: c.syntaxType } },
@@ -178,6 +221,6 @@ export function markdownSyntax(c: Colors = colors) {
 }
 
 export const markdownSyntaxStyles: Record<ThemeName, SyntaxStyle> = {
-        dark: markdownSyntax(darkColors),
-        light: markdownSyntax(lightColors),
+        dark: createMarkdownSyntaxStyle(darkColors),
+        light: createMarkdownSyntaxStyle(lightColors),
 }
