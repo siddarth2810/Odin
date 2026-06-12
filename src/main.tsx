@@ -1,4 +1,3 @@
-#!/usr/bin/env bun
 import { access, readFile } from "node:fs/promises"
 import path from "node:path"
 import type { OdinInput } from "./App.js"

@@ -15,10 +15,11 @@
   "scripts": {
     "build": "bun run scripts/build.ts",
     "prepack": "bun run build",
+    "test": "bun test",
     "typecheck": "tsc --noEmit",
-    "start": "bun run src/index.tsx",
-    "dev": "bun run src/index.tsx",
-    "preview": "bun run src/index.tsx --",
+    "start": "bun run src/index.ts",
+    "dev": "bun run src/index.ts",
+    "preview": "bun run src/index.ts --",
     "link": "bun link"
   },
   "dependencies": {
