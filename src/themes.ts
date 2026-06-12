@@ -1,46 +1,113 @@
-import { SyntaxStyle } from "@opentui/core"
+import { SyntaxStyle, ansi256IndexToRgb } from "@opentui/core"
 
-export type Colors = typeof colors
-export const colors = {
-        background: "#0a0a0a",
-        backgroundPanel: "#141414",
-        backgroundElement: "#141414",
-        borderSubtle: "#3c3c3c",
-        border: "#484848",
-        borderActive: "#606060",
-        primary: "#fab283",
-        secondary: "#5c9cf5",
-        accent: "#9d7cd8",
-        error: "#e06c75",
-        warning: "#f5a742",
-        success: "#7fd88f",
-        info: "#56b6c2",
-        text: "#eeeeee",
-        textMuted: "#808080",
-        markdownText: "#eeeeee",
-        markdownHeading: "#eeeeee",
-        markdownLink: "#fab283",
-        markdownLinkText: "#56b6c2",
-        markdownCode: "#7fd88f",
-        markdownBlockQuote: "#e5c07b",
-        markdownEmph: "#e5c07b",
-        markdownStrong: "#f5a742",
-        markdownHorizontalRule: "#808080",
-        markdownListItem: "#fab283",
-        markdownListEnumeration: "#56b6c2",
-        markdownImage: "#fab283",
-        markdownImageText: "#56b6c2",
-        markdownCodeBlock: "#eeeeee",
-        syntaxComment: "#808080",
-        syntaxKeyword: "#9d7cd8",
-        syntaxFunction: "#fab283",
-        syntaxVariable: "#eeeeee",
-        syntaxString: "#7fd88f",
-        syntaxNumber: "#e5c07b",
-        syntaxType: "#56b6c2",
-        syntaxOperator: "#56b6c2",
-        syntaxPunctuation: "#eeeeee",
+function hexByte(value: number): string {
+        return value.toString(16).padStart(2, "0")
 }
+
+function ansi256Hex(index: number): string {
+        const [red, green, blue] = ansi256IndexToRgb(index)
+        return `#${hexByte(red)}${hexByte(green)}${hexByte(blue)}`
+}
+
+export const mdLight = {
+        h1: ansi256Hex(125),
+        h2: ansi256Hex(125),
+        h3: ansi256Hex(31),
+        bullet: ansi256Hex(166),
+        link: ansi256Hex(26),
+        codeFg: ansi256Hex(124),
+        codeBg: ansi256Hex(254),
+        fence: ansi256Hex(28),
+        dim: ansi256Hex(242),
+        note: ansi256Hex(25),
+        tip: ansi256Hex(28),
+        important: ansi256Hex(91),
+        warning: ansi256Hex(130),
+        caution: ansi256Hex(160),
+}
+
+export const mdDark = {
+        h1: ansi256Hex(213),
+        h2: ansi256Hex(213),
+        h3: ansi256Hex(45),
+        bullet: ansi256Hex(208),
+        link: ansi256Hex(39),
+        codeFg: ansi256Hex(215),
+        codeBg: ansi256Hex(236),
+        fence: ansi256Hex(114),
+        dim: ansi256Hex(244),
+        note: ansi256Hex(75),
+        tip: ansi256Hex(78),
+        important: ansi256Hex(141),
+        warning: ansi256Hex(179),
+        caution: ansi256Hex(203),
+}
+
+type MdrPalette = typeof mdLight
+type Scheme = "dark" | "light"
+
+function buildColors(md: MdrPalette, scheme: Scheme) {
+        const isDark = scheme === "dark"
+        const text = isDark ? "#eeeeee" : "#1c1c1c"
+        const background = isDark ? "#0a0a0a" : "#ffffff"
+
+        return {
+                background,
+                backgroundPanel: md.codeBg,
+                backgroundElement: background,
+                buttonBackground: isDark ? "#303030" : md.codeBg,
+                borderSubtle: md.dim,
+                border: md.dim,
+                borderActive: md.link,
+                primary: md.bullet,
+                secondary: md.link,
+                accent: md.h1,
+                error: md.caution,
+                warning: md.warning,
+                success: md.tip,
+                info: md.note,
+                text,
+                textMuted: md.dim,
+                markdownText: text,
+                markdownHeading: md.h1,
+                markdownLink: "#fab283",
+                markdownLinkText: "#56b6c2",
+                markdownCode: "#7fd88f",
+                markdownCodeBackground: md.codeBg,
+                markdownCodeBlock: md.fence,
+                markdownCodeBorder: md.dim,
+                markdownBlockQuote: md.dim,
+                markdownEmph: md.warning,
+                markdownStrong: md.warning,
+                markdownHorizontalRule: md.dim,
+                markdownListItem: md.bullet,
+                markdownListEnumeration: md.bullet,
+                markdownImage: md.link,
+                markdownImageText: md.link,
+                syntaxComment: md.dim,
+                syntaxKeyword: md.important,
+                syntaxFunction: md.h3,
+                syntaxVariable: text,
+                syntaxString: md.tip,
+                syntaxNumber: md.warning,
+                syntaxType: md.note,
+                syntaxOperator: md.h3,
+                syntaxPunctuation: md.dim,
+        }
+}
+
+export const darkColors = buildColors(mdDark, "dark")
+export const lightColors = buildColors(mdLight, "light")
+export const themes = {
+        dark: darkColors,
+        light: lightColors,
+}
+
+export type ThemeName = keyof typeof themes
+export type Colors = typeof darkColors
+
+export const defaultThemeName: ThemeName = "dark"
+export const colors = themes[defaultThemeName]
 
 export type MarkdownTheme = typeof markdownTheme
 export const markdownTheme = {
@@ -85,8 +152,8 @@ export function markdownSyntax(c: Colors = colors) {
                 { scope: ["markup.list"], style: { foreground: c.markdownListItem } },
                 { scope: ["markup.list.enumerator"], style: { foreground: c.markdownListEnumeration } },
                 { scope: ["markup.quote"], style: { foreground: c.markdownBlockQuote, italic: true } },
-                { scope: ["markup.raw", "markup.raw.block"], style: { foreground: c.markdownCode } },
-                { scope: ["markup.raw.inline"], style: { foreground: c.markdownCode, background: c.background } },
+                { scope: ["markup.raw", "markup.raw.block"], style: { foreground: c.markdownCodeBlock } },
+                { scope: ["markup.raw.inline"], style: { foreground: c.markdownCode, background: c.markdownCodeBackground } },
                 { scope: ["markup.link"], style: { foreground: c.markdownLink, underline: true } },
                 { scope: ["markup.link.label"], style: { foreground: c.markdownLinkText, underline: true } },
                 { scope: ["markup.link.url"], style: { foreground: c.markdownLink, underline: true } },
