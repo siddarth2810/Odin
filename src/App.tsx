@@ -1,9 +1,9 @@
 /** @jsxImportSource @opentui/solid */
 import path from "node:path"
-import type { ScrollBoxRenderable } from "@opentui/core"
+import { SyntaxStyle, type ScrollBoxRenderable } from "@opentui/core"
 import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
 import { createMemo, createSignal } from "solid-js"
-import { CODE_FOOTER, CODE_HEADER_PREFIX, splitMarkdownSegments } from "./markdown.js"
+import { CODE_FOOTER, CODE_HEADER_PREFIX, renderMarkdownDisplayBlocks, splitMarkdownSegments } from "./markdown.js"
 import { defaultThemeName, markdownSyntaxStyles, themes, type Colors, type ThemeName } from "./themes.js"
 
 export type OdinInput = {
@@ -15,6 +15,13 @@ type AppProps = OdinInput & {
   onExit: () => void
 }
 
+// Pretty tables are already terminal text, so they use an empty syntax style.
+// Normal Markdown still uses markdownSyntaxStyles below, which keeps inline code,
+// links, headings, and theme colors working.
+const plainTextSyntaxStyle = SyntaxStyle.create()
+
+// Fenced code blocks are rendered outside the Markdown renderer so their body
+// can keep code-block colors without being mixed into surrounding prose.
 function MdrCodeBlock(props: { colors: Colors; language: string; body: string }) {
   const header = props.language.length > 0 ? `${CODE_HEADER_PREFIX} ${props.language} ` : CODE_HEADER_PREFIX
 
@@ -47,6 +54,8 @@ export function App(props: AppProps) {
   const [themeName, setThemeName] = createSignal<ThemeName>(defaultThemeName)
   const activeColors = createMemo(() => themes[themeName()])
   const syntaxStyle = createMemo(() => markdownSyntaxStyles[themeName()])
+  // First split the file into Markdown chunks and fenced-code chunks. Tables
+  // inside Markdown chunks are split later, because only tables need plain text.
   const segments = splitMarkdownSegments(props.content)
   const fileName = path.basename(props.file)
   let scroller: ScrollBoxRenderable | undefined
@@ -128,17 +137,36 @@ export function App(props: AppProps) {
         >
           {segments.map((segment) =>
             segment.kind === "markdown" ? (
-              <code
-                width="100%"
-                flexShrink={0}
-                filetype="markdown"
-                drawUnstyledText={false}
-                content={segment.content}
-                syntaxStyle={syntaxStyle()}
-                streaming={false}
-                conceal={true}
-                fg={activeColors().markdownText}
-              />
+              // Second split: normal Markdown keeps syntax highlighting and
+              // conceal, while rendered Unicode tables bypass Markdown parsing.
+              renderMarkdownDisplayBlocks(segment.content).map((block) =>
+                block.kind === "markdown" ? (
+                  <code
+                    width="100%"
+                    flexShrink={0}
+                    filetype="markdown"
+                    drawUnstyledText={false}
+                    content={block.content}
+                    syntaxStyle={syntaxStyle()}
+                    streaming={false}
+                    conceal={true}
+                    fg={activeColors().markdownText}
+                  />
+                ) : (
+                  <code
+                    width="100%"
+                    flexShrink={0}
+                    filetype="text"
+                    drawUnstyledText={true}
+                    content={block.content}
+                    syntaxStyle={plainTextSyntaxStyle}
+                    wrapMode="none"
+                    streaming={false}
+                    conceal={false}
+                    fg={activeColors().markdownText}
+                  />
+                ),
+              )
             ) : (
               <MdrCodeBlock colors={activeColors()} language={segment.language} body={segment.body} />
             ),
