@@ -94,6 +94,15 @@ export function App(props: AppProps) {
       key.preventDefault()
       scroller.scrollBy(-1, "viewport")
     }
+
+    if (key.name === "g") {
+      key.preventDefault()
+      if (key.shift) {
+        scroller.scrollTo(scroller.scrollHeight)
+      } else {
+        scroller.scrollTo(0)
+      }
+    }
   })
 
   return (
@@ -138,7 +147,7 @@ export function App(props: AppProps) {
       </scrollbox>
       <box height={1} paddingLeft={1} paddingRight={1} backgroundColor={activeColors().backgroundPanel}>
         <text width="100%" fg={activeColors().textMuted} wrapMode="none" truncate={true}>
-         {fileName} · q/esc · j/k ↑↓ · t
+         {fileName} · q/esc · j/k ↑↓ · g/G · t
         </text>
       </box>
     </box>
